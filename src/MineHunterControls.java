@@ -18,7 +18,6 @@ import javax.swing.JPanel;
  */
 public class MineHunterControls extends JPanel
 {
-    
     private JButton colorClicked;
     private Color pegColor;
     
@@ -110,9 +109,7 @@ public class MineHunterControls extends JPanel
         resetButton.setText("Reset");
         resetButton.addActionListener(a);
         add(resetButton);
-        
     }
-    
     /**
      *
      * @param s
@@ -120,13 +117,7 @@ public class MineHunterControls extends JPanel
      */
     public int getButtonAction(JButton s)
     {
-        
-        if(s.getText().equals("Reset"))
-        {
-            return 0;
-        }
+        s.getText();
         return 0;
     }
-    
-      
 }

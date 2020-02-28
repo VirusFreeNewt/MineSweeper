@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-//package minehunter;
 
 import javax.swing.JFrame;
 
@@ -13,7 +12,6 @@ import javax.swing.JFrame;
  */
 public class MineHunter
 {
-
     /**
      * @param args the command line arguments
      */

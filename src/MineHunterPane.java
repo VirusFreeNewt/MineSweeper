@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-//package minehunter;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -22,18 +21,15 @@ import javax.swing.JPanel;
  */
 public class MineHunterPane extends JPanel
 {
-    private int a;
     private MineHunterGrid lbg = new MineHunterGrid(20, 20);
     private MineHunterControls lbc = new MineHunterControls(new colorListener());
     
     public MineHunterPane()
     {
-        
             setLayout(new BorderLayout());
     	    setPreferredSize(new Dimension(800, 800));
             add(lbg,BorderLayout.CENTER);
             add(lbc, BorderLayout.WEST);
-            
     }
 
     private class colorListener implements ActionListener
@@ -41,11 +37,7 @@ public class MineHunterPane extends JPanel
 		@Override
 		public void actionPerformed(ActionEvent e)
 		{
-			a = lbc.getButtonAction((JButton) e.getSource());
-                        lbg.doButtonAction(a);
+            lbg.doButtonAction(lbc.getButtonAction((JButton) e.getSource()));
 		}
     }
-    
 }
-
-

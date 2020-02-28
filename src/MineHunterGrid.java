@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-//package minehunter;
 
 
 import java.awt.Dimension;
@@ -28,7 +27,7 @@ public class MineHunterGrid extends JPanel implements ActionListener, MineHunter
     
     private JButton[][] tiles;
     private JButton clicked;
-    private int clickedX, clickedY, mineCount=0, percentMines;
+    private int clickedX, clickedY, percentMines, mineCount = 0;
     private int delay = 1000; //in ms
     private int gridDimensions;
     private MineHunterControls controls;
@@ -39,26 +38,22 @@ public class MineHunterGrid extends JPanel implements ActionListener, MineHunter
     private ImageIcon flag = new ImageIcon("../images/flag.jpg"); 
     
     private Color[] buttonColors = {Color.WHITE, Color.GRAY, Color.GREEN, Color.YELLOW, Color.PINK, Color.BLUE, Color.RED, Color.BLACK};
-    
 
-   
-    
-    public MineHunterGrid(int d, int p)
+    public MineHunterGrid(int gridDimensions, int percentMines)
     {
         //Initializes the size of the grid to the users specifications
-        gridDimensions = d;
+        this.gridDimensions = gridDimensions;
         //Initializes the percentage of mines to the users specifications
-        percentMines = p;
+        this.percentMines = percentMines;
         //Initializes tiles to a new 2D array of JButtons.
         //DO NOT EDIT
         tiles = new JButton[gridDimensions][gridDimensions];
         
         //TODO: initialize the mines 2D array to a new boolean 2D array 
         //the number of rows in this array is equal to the gridDimensions
-        //the number of cols in this array is equal to the gridDimenstions
+        //the number of cols in this array is equal to the gridDimensions
         
-   
-
+        mines = new boolean[gridDimensions][gridDimensions];
         
         //The mines located by the user
         //DO NOT EDIT
@@ -67,7 +62,7 @@ public class MineHunterGrid extends JPanel implements ActionListener, MineHunter
         //Calls the makeMines method
         //You can comment this line out for testing purposes
         // DO NOT EDIT
-        makeMines(p);
+        makeMines(percentMines);
         
         //Sets the layout of the JPanel and builds the grid of buttons
         //Each button is assigned an ActionListener
@@ -76,13 +71,13 @@ public class MineHunterGrid extends JPanel implements ActionListener, MineHunter
         setLayout(new GridLayout(gridDimensions, gridDimensions));
     	setPreferredSize(new Dimension(800, 800));
         
-        for (int i=0; i<tiles.length; ++i)
+        for (int i = 0; i < tiles.length; ++i)
         {
-            for (int j=0; j<tiles[i].length; ++j)
+            for (int j = 0; j < tiles[i].length; ++j)
             {
          	tiles[i][j] = new JButton();       
          	tiles[i][j].addActionListener(this);
-                tiles[i][j].addMouseListener(new rightClickListener());
+            tiles[i][j].addMouseListener(new rightClickListener());
          	add(tiles[i][j]);
             }
         }
@@ -96,8 +91,14 @@ public class MineHunterGrid extends JPanel implements ActionListener, MineHunter
     */
     public void makeMines(int percent)
     {
-
-
+        int randX;
+        int randY;
+        while(mineCount < (gridDimensions * 2) * (percent / 100))
+        {
+            randX = (int)(Math.random() * gridDimensions + 1);
+            randY = (int)(Math.random() * gridDimensions + 1);
+            //if(tiles[randX][randY].getBackground() == )
+        }
     }
     
    /**
@@ -127,8 +128,7 @@ public class MineHunterGrid extends JPanel implements ActionListener, MineHunter
     {
 
     }
-    
-    
+
      /**
      * TODO: Write the paintTiles method
      * Counts the number of mines surrounding the clicked button
@@ -142,8 +142,7 @@ public class MineHunterGrid extends JPanel implements ActionListener, MineHunter
 
   
     }
-    
- 
+
     /**
      * TODO: Write the isDone() method
      * Checks if all the mines have been located.  
@@ -152,12 +151,9 @@ public class MineHunterGrid extends JPanel implements ActionListener, MineHunter
     */
     public boolean isDone()
     {
-
         return true;
-        
     }
-    
-    
+
     /**
      * DO NOT EDIT
      * Resets the game.  
@@ -167,13 +163,12 @@ public class MineHunterGrid extends JPanel implements ActionListener, MineHunter
         {
             for(int cols = 0; cols < mines[rows].length; ++cols)
             {
-                mines[rows][cols]=false;
-                locatedMines[rows][cols]=false;
+                mines[rows][cols] = false;
+                locatedMines[rows][cols] = false;
                 tiles[rows][cols].setBackground(null);
                 tiles[rows][cols].setIcon(null);
             }
         }
-        
         makeMines(percentMines);
     }
     
@@ -202,33 +197,30 @@ public class MineHunterGrid extends JPanel implements ActionListener, MineHunter
         if(!locatedMines[mineX][mineY])
         {
             tiles[mineX][mineY].setIcon(flag);
-            locatedMines[mineX][mineY]=true;
+            locatedMines[mineX][mineY] = true;
         }
         else
         {
             tiles[mineX][mineY].setIcon(null);
-            locatedMines[mineX][mineY]=false;
+            locatedMines[mineX][mineY] = false;
         }
-
     }
     
     /**
      * DO NOT EDIT
      * Locates the button that is clicked on the grid
      * locates the x and y location of the button clicked
-     * @param c the button clicked
+     * @param clicked the button clicked
      */
-    public void locateClicked(JButton c)
+    public void locateClicked(JButton clicked)
     {
-        
-        for(int rows = 0; rows < tiles.length; rows++)
+        for(int rows = 0; rows < tiles.length; ++rows)
         {
-            for(int cols = 0; cols < tiles[rows].length; cols++)
+            for(int cols = 0; cols < tiles[rows].length; ++cols)
             {
-                if(c == tiles[rows][cols])
+                if(clicked == tiles[rows][cols])
                 {
-                
-                clicked = c;
+                this.clicked = clicked;
                 clickedX = rows;
                 clickedY = cols;
                 }
@@ -257,20 +249,16 @@ public class MineHunterGrid extends JPanel implements ActionListener, MineHunter
                 {
                    System.out.println("YOU WIN!"); 
                 }
-                
-                
             }
         }
     } 
     
         @Override
     public void actionPerformed(ActionEvent e)
-        {
+    {
         clicked = (JButton) e.getSource();
         locateClicked(clicked);
         paintTiles(clickedX, clickedY);
         checkForMine(clickedX, clickedY);
-        
     }
-    
 }
