@@ -4,70 +4,60 @@
  * and open the template in the editor.
  */
 
-
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import static java.lang.System.console;
 import java.awt.Color;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.Timer;
 
 /**
  *
- * @author timberlinepluska
+ * @author VirusFreeNewt
  */
 public class MineHunterGrid extends JPanel implements ActionListener, MineHunterInterface
 {
-    
     private JButton[][] tiles;
     private JButton clicked;
-    private int clickedX, clickedY, percentMines, mineCount = 0;
+    private int clickedX, clickedY, percentMines, mineCount, numMines;
     private int delay = 1000; //in ms
     private int gridDimensions;
     private MineHunterControls controls;
     private Color buttonColor = null;
+    private int[][] tileNum; // the number of mines surrounding each tile
     private boolean[][] mines;
     private boolean[][] locatedMines;
-    //TODO: Specify the path to the flag icon 
-    private ImageIcon flag = new ImageIcon("../images/flag.jpg"); 
+    private ImageIcon flag = new ImageIcon("images/mineSweeperFlag.jpg");
     
     private Color[] buttonColors = {Color.WHITE, Color.GRAY, Color.GREEN, Color.YELLOW, Color.PINK, Color.BLUE, Color.RED, Color.BLACK};
 
     public MineHunterGrid(int gridDimensions, int percentMines)
     {
-        //Initializes the size of the grid to the users specifications
+        numMines = (int)(Math.pow(gridDimensions, 2) * ((double)percentMines / 100));
+
         this.gridDimensions = gridDimensions;
-        //Initializes the percentage of mines to the users specifications
+
         this.percentMines = percentMines;
-        //Initializes tiles to a new 2D array of JButtons.
-        //DO NOT EDIT
+
         tiles = new JButton[gridDimensions][gridDimensions];
-        
-        //TODO: initialize the mines 2D array to a new boolean 2D array 
-        //the number of rows in this array is equal to the gridDimensions
-        //the number of cols in this array is equal to the gridDimensions
-        
+
         mines = new boolean[gridDimensions][gridDimensions];
-        
-        //The mines located by the user
-        //DO NOT EDIT
+
         locatedMines = new boolean[gridDimensions][gridDimensions];
 
-        //Calls the makeMines method
-        //You can comment this line out for testing purposes
-        // DO NOT EDIT
+        tileNum = new int[gridDimensions][gridDimensions];
+
         makeMines(percentMines);
-        
+
+        getTileNum();
+
         //Sets the layout of the JPanel and builds the grid of buttons
         //Each button is assigned an ActionListener
         //Each button is assigned a rightClickListener
-        //DO NOT EDIT
         setLayout(new GridLayout(gridDimensions, gridDimensions));
     	setPreferredSize(new Dimension(800, 800));
         
@@ -83,26 +73,45 @@ public class MineHunterGrid extends JPanel implements ActionListener, MineHunter
         }
     }
 
+    private void getTileNum()
+    {
+        for (int i = 0; i < tiles.length; ++i)
+        {
+            for(int j = 0; j < tiles[i].length; ++j)
+            {
+                if(mines[i][j])
+                {
+                    tileNum[i][j] = -1;
+                    continue;
+                }
+                tileNum[i][j] = getSurroundingMines(i, j);
+            }
+        }
+    }
+
    /**
-    * TODO: Write the makeMines method
     * Sets the mines on the grid.  Wherever a mind occurs on the grid
     * the mines array will be set to true
     * @param percent mines on the grid
     */
     public void makeMines(int percent)
     {
+        mineCount = 0;
         int randX;
         int randY;
-        while(mineCount < (gridDimensions * 2) * (percent / 100))
+        while(mineCount < numMines)
         {
-            randX = (int)(Math.random() * gridDimensions + 1);
-            randY = (int)(Math.random() * gridDimensions + 1);
-            //if(tiles[randX][randY].getBackground() == )
+            randX = (int)(Math.random() * gridDimensions);
+            randY = (int)(Math.random() * gridDimensions);
+            if(!mines[randX][randY])
+            {
+                mines[randX][randY] = true;
+                ++mineCount;
+            }
         }
     }
     
    /**
-    * TODO: Write the showMines method
     * Displays the mines on the grid.  If there is a mine
     * the background of the button will be red
     * the flag icon will appear. 
@@ -112,61 +121,123 @@ public class MineHunterGrid extends JPanel implements ActionListener, MineHunter
     */
     public void showMines()
     {
-
+        for(int i = 0; i < mines.length; ++i)
+        {
+            for(int j = 0; j < mines[i].length; ++j)
+            {
+                if(mines[i][j])
+                {
+                    tiles[i][j].setBackground(Color.RED);
+                }
+            }
+        }
     }
     
    /**
-    * TODO: Write the checkForMine method
     * Checks the mines array to see if a mine is set at the 
     * x and y location of the clicked button.  I a mine is 
     * set showMines() will be called and all the buttons will appear
     * to indicate that the player has lost
-    * @param mineX the x location of the button clicked
-    * @param mineY the y location of the button clicked
+    * @param row the row of the button clicked
+    * @param col the column of the button clicked
     */
-    public void checkForMine(int mineX, int mineY)
+    public void checkForMine(int row, int col)
     {
-
+        if(mines[row][col])
+        {
+            showMines();
+        }
     }
 
+    private int getSurroundingMines(int row, int col)
+    {
+        mineCount = 0;
+        int leftOffset = 1;
+        int rightOffset = 1;
+        int topOffset = 1;
+        int bottomOffset = 1;
+
+        if(row == 0)
+        {
+            leftOffset = 0;
+        }
+        else if(row == gridDimensions - 1)
+        {
+            rightOffset = 0;
+        }
+
+        if(col == 0)
+        {
+            topOffset = 0;
+        }
+        else if(col == gridDimensions - 1)
+        {
+            bottomOffset = 0;
+        }
+
+        for(int i = row - leftOffset; i < row + rightOffset; ++i)
+        {
+            for(int j = col - topOffset; j < col + bottomOffset; ++j)
+            {
+                if(mines[i][j])
+                {
+                    ++mineCount;
+                }
+            }
+        }
+        return mineCount;
+    }
      /**
-     * TODO: Write the paintTiles method
      * Counts the number of mines surrounding the clicked button
      * Depending on the number of mines located, the button clicked will be set to
      * a different color in the buttonColors array
-     * @param clickedX the x location of the button clicked
-     * @param clickedY the y location of the button clicked
+     * @param row the row of the button clicked
+     * @param col the column of the button clicked
      */
-    public void paintTiles(int clickedX, int clickedY)
+    public void paintTiles(int row, int col)
     {
-
-  
+        int tileNum = getSurroundingMines(row, col);
+        if(tileNum != -1)
+        {
+            tiles[row][col].setBackground(buttonColors[tileNum]);
+        }
     }
 
     /**
-     * TODO: Write the isDone() method
      * Checks if all the mines have been located.  
      * If all the mines have been located in the mines array, 
      * returns true, otherwise, returns false
     */
     public boolean isDone()
     {
-        return true;
+        mineCount = 0;
+        for(int i = 0; i < mines.length; ++i)
+        {
+            for(int j = 0; j < mines[i].length; ++j)
+            {
+                if(locatedMines[i][j])
+                {
+                    ++mineCount;
+                }
+            }
+        }
+        return mineCount == numMines;
     }
 
     /**
      * DO NOT EDIT
      * Resets the game.  
      */
-    public void resetGame(){
-        for(int rows = 0; rows < mines.length; ++rows)
+    public void resetGame()
+    {
+        for(int row = 0; row < mines.length; ++row)
         {
-            for(int cols = 0; cols < mines[rows].length; ++cols)
+            for(int col = 0; col < mines[row].length; ++col)
             {
-                mines[rows][cols] = false;
-                locatedMines[rows][cols] = false;
-                tiles[rows][cols].setBackground(null);
-                tiles[rows][cols].setIcon(null);
+                mines[row][col] = false;
+                locatedMines[row][col] = false;
+                tiles[row][col].setBackground(null);
+                tiles[row][col].setIcon(null);
             }
         }
         makeMines(percentMines);
@@ -226,7 +297,6 @@ public class MineHunterGrid extends JPanel implements ActionListener, MineHunter
                 }
             }
         }
-        
     }
     
     /**
@@ -253,7 +323,7 @@ public class MineHunterGrid extends JPanel implements ActionListener, MineHunter
         }
     } 
     
-        @Override
+    @Override
     public void actionPerformed(ActionEvent e)
     {
         clicked = (JButton) e.getSource();
