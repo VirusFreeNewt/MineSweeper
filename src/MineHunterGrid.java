@@ -28,9 +28,9 @@ public class MineHunterGrid extends JPanel implements ActionListener, MineHunter
     private int gridDimensions;
     private MineHunterControls controls;
     private Color buttonColor = null;
-    private int[][] tileNum; // the number of mines surrounding each tile
     private boolean[][] mines;
     private boolean[][] locatedMines;
+    private int[][] surroundingTiles;
     private ImageIcon flag = new ImageIcon("images/mineSweeperFlag.jpg");
     
     private Color[] buttonColors = {Color.WHITE, Color.GRAY, Color.GREEN, Color.YELLOW, Color.PINK, Color.BLUE, Color.RED, Color.BLACK};
@@ -49,18 +49,16 @@ public class MineHunterGrid extends JPanel implements ActionListener, MineHunter
 
         locatedMines = new boolean[gridDimensions][gridDimensions];
 
-        tileNum = new int[gridDimensions][gridDimensions];
+        surroundingTiles = new int[gridDimensions][gridDimensions];
 
         makeMines(percentMines);
-
-        getTileNum();
 
         //Sets the layout of the JPanel and builds the grid of buttons
         //Each button is assigned an ActionListener
         //Each button is assigned a rightClickListener
         setLayout(new GridLayout(gridDimensions, gridDimensions));
     	setPreferredSize(new Dimension(800, 800));
-        
+
         for (int i = 0; i < tiles.length; ++i)
         {
             for (int j = 0; j < tiles[i].length; ++j)
@@ -73,21 +71,6 @@ public class MineHunterGrid extends JPanel implements ActionListener, MineHunter
         }
     }
 
-    private void getTileNum()
-    {
-        for (int i = 0; i < tiles.length; ++i)
-        {
-            for(int j = 0; j < tiles[i].length; ++j)
-            {
-                if(mines[i][j])
-                {
-                    tileNum[i][j] = -1;
-                    continue;
-                }
-                tileNum[i][j] = getSurroundingMines(i, j);
-            }
-        }
-    }
 
    /**
     * Sets the mines on the grid.  Wherever a mind occurs on the grid
@@ -148,10 +131,17 @@ public class MineHunterGrid extends JPanel implements ActionListener, MineHunter
             showMines();
         }
     }
-
-    private int getSurroundingMines(int row, int col)
+     /**
+     * Counts the number of mines surrounding the clicked button
+     * Depending on the number of mines located, the button clicked will be set to
+     * a different color in the buttonColors array
+     * @param row the row of the button clicked
+     * @param col the column of the button clicked
+     */
+    public void paintTiles(int row, int col)
     {
-        mineCount = 0;
+        int surroundingMines = 0;
+
         int leftOffset = 1;
         int rightOffset = 1;
         int topOffset = 1;
@@ -175,32 +165,25 @@ public class MineHunterGrid extends JPanel implements ActionListener, MineHunter
             bottomOffset = 0;
         }
 
-        for(int i = row - leftOffset; i < row + rightOffset; ++i)
+        for(int i = row - leftOffset; i <= row + rightOffset; ++i)
         {
-            for(int j = col - topOffset; j < col + bottomOffset; ++j)
+            for(int j = col - topOffset; j <= col + bottomOffset; ++j)
             {
                 if(mines[i][j])
                 {
-                    ++mineCount;
+                    ++surroundingMines;
                 }
+
             }
         }
-        return mineCount;
-    }
-     /**
-     * Counts the number of mines surrounding the clicked button
-     * Depending on the number of mines located, the button clicked will be set to
-     * a different color in the buttonColors array
-     * @param row the row of the button clicked
-     * @param col the column of the button clicked
-     */
-    public void paintTiles(int row, int col)
-    {
-        int tileNum = getSurroundingMines(row, col);
-        if(tileNum != -1)
-        {
-            tiles[row][col].setBackground(buttonColors[tileNum]);
-        }
+        tiles[row][col].setBackground(buttonColors[surroundingMines]);
+            for(int i = row - leftOffset; i <= row + rightOffset; ++i)
+            {
+                for(int j = col - topOffset; j <= col + bottomOffset; ++j)
+                {
+                        paintTiles(i, j);
+                }
+            }
     }
 
     /**
