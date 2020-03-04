@@ -1,9 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -18,9 +12,7 @@ import javax.swing.JPanel;
  */
 public class MineHunterControls extends JPanel
 {
-    private JButton colorClicked;
-    private Color pegColor;
-    
+
     /**
      *
      * @param a
@@ -110,6 +102,7 @@ public class MineHunterControls extends JPanel
         resetButton.addActionListener(a);
         add(resetButton);
     }
+
     /**
      *
      * @param s
