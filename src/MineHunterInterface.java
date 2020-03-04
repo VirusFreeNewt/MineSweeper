@@ -1,9 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 import javax.swing.JButton;
 
 /**
@@ -64,13 +58,12 @@ public interface MineHunterInterface
      * @param i indicates whether to reset game
      */
     void doButtonAction(int i);
-    
-    
+
     /**
     * Sets the rightClicked Button with a flag
     * If a mine is found by the player
-    * @param MineX
-    * @param MineY 
+    * @param mineX
+    * @param mineY
     */
     void identifyMines(int mineX, int mineY);
     
